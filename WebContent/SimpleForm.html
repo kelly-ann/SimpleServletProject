@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+</head>
+<body>
+
+<!-- The "method" type selected in the <form> below determines which HTTP method gets called -->
+<form method="post" action="xmlServletpath">
+	User name: <input name="userName" />
+	Full name: <input name="fullName" />
+	<br />
+	Profession: 
+	<input type="radio" name="prof" value="Developer">Developer</input>
+	<input type="radio" name="prof" value="Architect">Architect</input>
+	<select name="location" multiple size="3">
+		<option value="here">here</option>
+		<option value="there">there</option>
+		<option value="far">far away</option>
+		<option value="near">near</option>
+		<option value="nowhere">no where</option>
+	</select>
+	<input type="submit" />
+</form>
+
+</body>
+</html>

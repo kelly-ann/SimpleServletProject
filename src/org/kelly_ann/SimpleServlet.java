@@ -3,11 +3,13 @@ package org.kelly_ann;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * How to write a servlet:
@@ -27,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class SimpleServlet
  */
-@WebServlet(description = "A simple servlet", urlPatterns = { "/SimpleServlet", "/AdvancedServlet"})
+@WebServlet(description = "A simple servlet", urlPatterns = {"/SimpleServlet", "/AdvancedServlet", "/SimpleServletPath"})
 public class SimpleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -35,11 +37,36 @@ public class SimpleServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// this will print both to the console and server log files
-		System.out.println("Hello from Servlet GET method.");
-		// this will print to the web page 
+		/**
+		 * How this works:
+		 * the "?ParamNameHere=blah" that can be added to the URL when calling it.  After you have called it once it will store/cache it
+		 * in the HttpSession object which you get via the HttpServletRequest object.  Therefore, if you remove the param from 
+		 * the URL after that the browser will still have the previously cached value in the session object even though the 
+		 * request parameter is blank.  This will stay stored until the session variable expires or is overwritten by another 
+		 * supplied param value.  
+		 * Ex: ".../SimpleServletPath?name=kelly"  will store "kelly" in both the request and the "session" objects below.
+		 * 
+		 * HttpSession object use cases: login screens, shopping carts, etc.
+		 * A session object is per user/machine.  It is also only useful via the same browser on a user's machine.
+		 * 
+		 * Context object use cases: initialization code (e.g. 1 SHARED db connection for all users), community bulletin board, etc.
+		 * A context object is shared (globally) across the application for ALL users and machines and browsers.
+		 */
+		response.setContentType("text/html");
 		PrintWriter writer = response.getWriter();
-		writer.println("<h3>Hello from Servlet GET method -- on the web page!</h3>");
+		String userName = request.getParameter("name");
+		HttpSession session = request.getSession();
+		ServletContext context = request.getServletContext();
+		
+		if (userName != "" && userName != null) {
+			session.setAttribute("savedUserName", userName);
+			context.setAttribute("savedUserName", userName);
+		}
+		
+		writer.println("Request parameter has username as " + userName + "\n");
+		writer.println("Session parameter has username as " + (String) session.getAttribute("savedUserName"));
+		writer.println("Context parameter has username as " + (String) context.getAttribute("savedUserName"));
+		
 	}
 
 }
