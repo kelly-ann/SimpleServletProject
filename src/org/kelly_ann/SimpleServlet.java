@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +30,9 @@ import javax.servlet.http.HttpSession;
 /**
  * Servlet implementation class SimpleServlet
  */
-@WebServlet(description = "A simple servlet", urlPatterns = {"/SimpleServlet", "/AdvancedServlet", "/SimpleServletPath"})
+@WebServlet(description = "A simple servlet", urlPatterns = {"/SimpleServlet", "/AdvancedServlet", "/SimpleServletPath"},
+			initParams={@WebInitParam(name="defaultUser", value="John Doe")}
+)
 public class SimpleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -51,6 +54,17 @@ public class SimpleServlet extends HttpServlet {
 		 * 
 		 * Context object use cases: initialization code (e.g. 1 SHARED db connection for all users), community bulletin board, etc.
 		 * A context object is shared (globally) across the application for ALL users and machines and browsers.
+		 * 
+		 * The servlet class inheritance tree is (from top down): GenericServlet --> HttpServlet --> MyServletName (ex: SimpleServlet).
+		 * 
+		 * The init() method is the first one executed by any servlet.  It can be overridden.
+		 * It is used for initialization code and executes once per servlet.  Init() parameters can be configured using annotations or
+		 * in the web.xml file using <init-param>.
+		 * 
+		 * The second method executed is service().  It checks for what type of HTTP request it is and returns the correct HTTP method
+		 * (i.e. doPost(), doGet(), etc.).  If the MyServletName class does not override the doXXX() methods an Unsupported exception is
+		 * thrown by the HttpServlet parent class.
+		 * 
 		 */
 		response.setContentType("text/html");
 		PrintWriter writer = response.getWriter();
@@ -63,10 +77,10 @@ public class SimpleServlet extends HttpServlet {
 			context.setAttribute("savedUserName", userName);
 		}
 		
-		writer.println("Request parameter has username as " + userName + "\n");
-		writer.println("Session parameter has username as " + (String) session.getAttribute("savedUserName"));
-		writer.println("Context parameter has username as " + (String) context.getAttribute("savedUserName"));
-		
+		writer.println("Request parameter has username as " + userName + ". ");
+		writer.println("Session parameter has username as " + (String) session.getAttribute("savedUserName") + ". ");
+		writer.println("Context parameter has username as " + (String) context.getAttribute("savedUserName") + ". ");
+		writer.println("Init parameter has default username as " + getServletConfig().getInitParameter("defaultUser") + ". ");
 	}
 
 }
